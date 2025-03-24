@@ -8,7 +8,11 @@ namespace
 {
   bool isNumber(const std::string& str)
   {
-    if (str.empty())
+    try
+    {
+      std::stoll(str);
+    }
+    catch (const std::exception& e)
     {
       return false;
     }
@@ -132,9 +136,9 @@ namespace
     {
       throw std::invalid_argument("Division by zero");
     }
-    else if (isSameSign(lhs, rhs) && lhs < 0 && lhs != min && rhs != -1)
+    else if (lhs < 0)
     {
-      return lhs % rhs;
+      return rhs - std::abs(lhs) % rhs;
     }
     else
     {
@@ -182,7 +186,7 @@ long long int krylov::calculatePostfix(Queue< std::string >* postfixQueue)
     postfixQueue->pop();
     if (isNumber(symb))
     {
-      calculatingStack.push(stoll(symb));
+      calculatingStack.push(std::stoll(symb));
     }
     else
     {
@@ -231,7 +235,9 @@ std::istream& krylov::calculateExpression(std::istream& in)
 
 long long int krylov::calculateInfix(const std::string& str)
 {
+  std::cout << "Everything ok before getPost\n";
   Queue< std::string >* postfixExpression = getPostfixExpression(str);
+  std::cout << "Everything ok after getPost\n";
   long long int res = 0;
   try
   {
@@ -290,7 +296,7 @@ krylov::Queue< std::string >* krylov::getPostfixExpression(const std::string& st
     {
       if (!processingStack.empty())
       {
-        while (processingStack.top() != "(" && !processingStack.empty())
+        if (processingStack.top() != "(")
         {
           postfixQueue->push(processingStack.top());
           processingStack.pop();
@@ -302,7 +308,7 @@ krylov::Queue< std::string >* krylov::getPostfixExpression(const std::string& st
     {
       if (!processingStack.empty())
       {
-        while (processingStack.top() != "+" && processingStack.top() != "-" && !processingStack.empty())
+        if (processingStack.top() == "*" || processingStack.top() == "/" || processingStack.top() == "%")
         {
           postfixQueue->push(processingStack.top());
           processingStack.pop();
