@@ -290,7 +290,7 @@ krylov::Queue< std::string >* krylov::getPostfixExpression(const std::string& st
     {
       if (!processingStack.empty())
       {
-        while (processingStack.top() != "(")
+        while (processingStack.top() != "(" && !processingStack.empty())
         {
           postfixQueue->push(processingStack.top());
           processingStack.pop();
@@ -302,7 +302,7 @@ krylov::Queue< std::string >* krylov::getPostfixExpression(const std::string& st
     {
       if (!processingStack.empty())
       {
-        while (processingStack.top() == "+" || processingStack.top() == "-")
+        while (processingStack.top() != "+" && processingStack.top() != "-" && !processingStack.empty())
         {
           postfixQueue->push(processingStack.top());
           processingStack.pop();
