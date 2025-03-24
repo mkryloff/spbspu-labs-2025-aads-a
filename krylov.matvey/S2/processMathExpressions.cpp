@@ -190,9 +190,9 @@ long long int krylov::calculatePostfix(Queue< std::string >* postfixQueue)
     }
     else
     {
-      long long int leftOperand = calculatingStack.top();
-      calculatingStack.pop();
       long long int rightOperand = calculatingStack.top();
+      calculatingStack.pop();
+      long long int leftOperand = calculatingStack.top();
       calculatingStack.pop();
       calculatingStack.push(doOperation(leftOperand, rightOperand, symb));
     }
