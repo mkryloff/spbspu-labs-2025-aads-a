@@ -242,6 +242,7 @@ long long int krylov::calculateInfix(const std::string& str)
     delete postfixExpression;
     throw;
   }
+  delete postfixExpression;
   return res;
 }
 
@@ -302,6 +303,11 @@ krylov::Queue< std::string >* krylov::getPostfixExpression(const std::string& st
         processingStack.pop();
       }
       processingStack.push(symb);
+    }
+    else
+    {
+      delete postfixQueue;
+      throw std::logic_error("Incorrect expression!");
     }
   }
   while (!processingStack.empty())

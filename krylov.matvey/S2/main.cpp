@@ -24,5 +24,6 @@ int main(int argc, char** argv)
   catch (const std::exception& e)
   {
     std::cerr << "Error: " << e.what() << "\n";
+    return 1;
   }
 }
