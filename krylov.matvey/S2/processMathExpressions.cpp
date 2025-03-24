@@ -174,6 +174,16 @@ namespace
       throw std::invalid_argument("Incorrect expression!");
     }
   }
+
+  bool isHighPriorityOp(const std::string& str)
+  {
+    return str == "*" || str == "/" || str == "%";
+  }
+
+  bool isLowPriorityOp(const std::string& str)
+  {
+    return str == "+" || str == "-";
+  }
 }
 
 long long int krylov::calculatePostfix(Queue< std::string >* postfixQueue)
@@ -199,7 +209,7 @@ long long int krylov::calculatePostfix(Queue< std::string >* postfixQueue)
   }
   if (calculatingStack.size() != 1)
   {
-    throw std::logic_error("Incorrect expression after postfix!");
+    throw std::logic_error("Incorrect expression!");
   }
   return calculatingStack.top();
 }
@@ -276,7 +286,7 @@ krylov::Queue< std::string >* krylov::getPostfixExpression(const std::string& st
       if (bracketActive == false)
       {
         delete postfixQueue;
-        throw std::logic_error("Incorrect expression with brackets!");
+        throw std::logic_error("Incorrect expression!");
       }
       while (processingStack.top() != "(")
       {
@@ -290,7 +300,7 @@ krylov::Queue< std::string >* krylov::getPostfixExpression(const std::string& st
     {
       postfixQueue->push(symb);
     }
-    else if (symb == "+" || symb == "-")
+    else if (isLowPriorityOp(symb))
     {
       if (!processingStack.empty())
       {
@@ -302,11 +312,11 @@ krylov::Queue< std::string >* krylov::getPostfixExpression(const std::string& st
       }
       processingStack.push(symb);
     }
-    else if (symb == "*" || symb == "/" || symb == "%")
+    else if (isHighPriorityOp(symb))
     {
       if (!processingStack.empty())
       {
-        if (processingStack.top() == "*" || processingStack.top() == "/" || processingStack.top() == "%")
+        if (isHighPriorityOp(processingStack.top()))
         {
           postfixQueue->push(processingStack.top());
           processingStack.pop();
@@ -328,7 +338,7 @@ krylov::Queue< std::string >* krylov::getPostfixExpression(const std::string& st
   if (bracketActive == true)
   {
     delete postfixQueue;
-    throw std::logic_error("Incorrect expression with brackets!");
+    throw std::logic_error("Incorrect expression!");
   }
   return postfixQueue;
 }
