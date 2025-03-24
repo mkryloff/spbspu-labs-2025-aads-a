@@ -1,4 +1,3 @@
-
 #ifndef STACK_HPP
 #define STACK_HPP
 #include <cstddef>
@@ -155,10 +154,6 @@ namespace krylov
     data_ = array;
     capacity_ += k;
   }
-
 }
 
 #endif
-
-
-
