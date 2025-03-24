@@ -288,19 +288,25 @@ krylov::Queue< std::string >* krylov::getPostfixExpression(const std::string& st
     }
     else if (symb == "+" || symb == "-")
     {
-      while (processingStack.top() == "+" || processingStack.top() == "-")
+      if (!processingStack.empty())
       {
-        postfixQueue->push(processingStack.top());
-        processingStack.pop();
+        while (processingStack.top() != "(")
+        {
+          postfixQueue->push(processingStack.top());
+          processingStack.pop();
+        }
       }
       processingStack.push(symb);
     }
     else if (symb == "*" || symb == "/" || symb == "%")
     {
-      while (processingStack.top() != "(")
+      if (!processingStack.empty())
       {
-        postfixQueue->push(processingStack.top());
-        processingStack.pop();
+        while (processingStack.top() == "+" || processingStack.top() == "-")
+        {
+          postfixQueue->push(processingStack.top());
+          processingStack.pop();
+        }
       }
       processingStack.push(symb);
     }
