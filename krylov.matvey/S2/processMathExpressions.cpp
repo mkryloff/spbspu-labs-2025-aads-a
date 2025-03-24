@@ -235,9 +235,7 @@ std::istream& krylov::calculateExpression(std::istream& in)
 
 long long int krylov::calculateInfix(const std::string& str)
 {
-  std::cout << "Everything ok before getPost\n";
   Queue< std::string >* postfixExpression = getPostfixExpression(str);
-  std::cout << "Everything ok after getPost\n";
   long long int res = 0;
   try
   {
