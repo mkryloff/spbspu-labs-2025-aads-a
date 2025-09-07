@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 
-void krylov::printComm(std::istream& in, std::ostream& out, const std::map< std::string, std::map< int, std::string, std::less< int > >, std::less< std::string > >& dicts)
+void krylov::printComm(std::istream& in, std::ostream& out, const Dictionary& dicts)
 {
   std::string dictName;
   in >> dictName;
@@ -24,7 +24,7 @@ void krylov::printComm(std::istream& in, std::ostream& out, const std::map< std:
   out << "\n";
 }
 
-void krylov::complementComm(std::istream& in, std::map< std::string, std::map< int, std::string, std::less< int > >, std::less< std::string > >& dicts)
+void krylov::complementComm(std::istream& in, Dictionary& dicts)
 {
   std::string resultName, dictName1, dictName2;
   in >> resultName >> dictName1 >> dictName2;
@@ -47,7 +47,7 @@ void krylov::complementComm(std::istream& in, std::map< std::string, std::map< i
   dicts[resultName] = result;
 }
 
-void krylov::intersectComm(std::istream& in, std::map< std::string, std::map< int, std::string, std::less< int > >, std::less< std::string > >& dicts)
+void krylov::intersectComm(std::istream& in, Dictionary& dicts)
 {
   std::string resultName, dictName1, dictName2;
   in >> resultName >> dictName1 >> dictName2;
@@ -70,7 +70,7 @@ void krylov::intersectComm(std::istream& in, std::map< std::string, std::map< in
   dicts[resultName] = result;
 }
 
-void krylov::unionComm(std::istream& in, std::map< std::string, std::map< int, std::string, std::less< int > >, std::less< std::string > >& dicts)
+void krylov::unionComm(std::istream& in, Dictionary& dicts)
 {
   std::string resultName, dictName1, dictName2;
   in >> resultName >> dictName1 >> dictName2;
@@ -93,7 +93,7 @@ void krylov::unionComm(std::istream& in, std::map< std::string, std::map< int, s
   dicts[resultName] = result;
 }
 
-void krylov::inputFile(const std::string& filename, std::map< std::string, std::map< int, std::string, std::less< int > >, std::less< std::string > >& dicts)
+void krylov::inputFile(const std::string& filename, Dictionary& dicts)
 {
   std::ifstream file(filename);
   std::string dataSet;
