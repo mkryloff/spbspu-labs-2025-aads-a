@@ -80,6 +80,7 @@ namespace krylov
     std::swap(fakeLeaf_, rhs.fakeLeaf_);
     std::swap(size_, rhs.size_);
   }
+
 }
 
 #endif
