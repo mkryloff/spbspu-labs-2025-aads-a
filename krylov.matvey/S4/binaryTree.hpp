@@ -34,6 +34,52 @@ namespace krylov
     size_t size_;
     Cmp cmp_;
   };
+
+  template< typename Key, typename T, typename Cmp >
+  BiTree< Key, T, Cmp >::BiTree():
+    fakeRoot_(new BiTreeNode< Key, T >{ std::pair< Key, T >{}, nullptr, nullptr, nullptr }),
+    fakeLeaf_(new BiTreeNode< Key, T >{ std::pair< Key, T >{}, nullptr, nullptr, nullptr }),
+    size_(0),
+    cmp_(Cmp{})
+  {
+    fakeLeaf_->parent = fakeRoot_;
+    fakeRoot_->left = fakeLeaf_;
+    fakeRoot_->right = fakeLeaf_;
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  BiTree< Key, T, Cmp >::BiTree(BiTree< Key, T, Cmp >&& rhs) noexcept:
+    fakeRoot_(rhs.fakeRoot_),
+    fakeLeaf_(rhs.fakeLeaf_),
+    size_(rhs.size_),
+    cmp_(rhs.cmp_)
+  {
+    rhs.fakeRoot_ = new BiTreeNode< Key, T >{ std::pair< Key, T >{}, nullptr, nullptr, nullptr };
+    rhs.fakeLeaf_ = new BiTreeNode< Key, T >{ std::pair< Key, T >{}, nullptr, nullptr, rhs.fakeRoot_ };
+    rhs.fakeRoot_->left = rhs.fakeLeaf_;
+    rhs.fakeRoot_->right = rhs.fakeLeaf_;
+    rhs.size_ = 0;
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  size_t BiTree< Key, T, Cmp >::size() const noexcept
+  {
+    return size_;
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  bool BiTree< Key, T, Cmp >::empty() const noexcept
+  {
+    return size_ == 0;
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  void BiTree< Key, T, Cmp >::swap(BiTree< Key, T, Cmp >& rhs) noexcept
+  {
+    std::swap(fakeRoot_, rhs.fakeRoot_);
+    std::swap(fakeLeaf_, rhs.fakeLeaf_);
+    std::swap(size_, rhs.size_);
+  }
 }
 
 #endif
