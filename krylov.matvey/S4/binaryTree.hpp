@@ -81,6 +81,27 @@ namespace krylov
     std::swap(size_, rhs.size_);
   }
 
+  template< typename Key, typename T, typename Cmp >
+  ConstIterator< Key, T, Cmp > BiTree< Key, T, Cmp >::find(const Key& key) const
+  {
+    BiTreeNode< Key, T > * current = fakeRoot_->left;
+    while (current != fakeLeaf_)
+    {
+      if (cmp_(key, current->data.first))
+      {
+        current = current->left;
+      }
+      else if (cmp_(current->data.first, key))
+      {
+        current = current->right;
+      }
+      else
+      {
+        return ConstIterator< Key, T, Cmp >(current, fakeLeaf_);
+      }
+    }
+    return ConstIterator< Key, T, Cmp >(fakeLeaf_, fakeLeaf_);
+  }
 }
 
 #endif
