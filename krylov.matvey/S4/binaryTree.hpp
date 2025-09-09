@@ -102,6 +102,50 @@ namespace krylov
     }
     return ConstIterator< Key, T, Cmp >(fakeLeaf_, fakeLeaf_);
   }
+
+  template< typename Key, typename T, typename Cmp >
+  T& BiTree< Key, T, Cmp >::operator[](const Key& key)
+  {
+    if (empty())
+    {
+      BiTreeNode< Key, T >* newNode = new BiTreeNode< Key, T >{ std::pair< Key, T >(key, T()), fakeLeaf_, fakeLeaf_, fakeRoot_ };
+      fakeRoot_->left = newNode;
+      size_++;
+      return newNode->data.second;
+    }
+    BiTreeNode< Key, T >* current = fakeRoot_->left;
+    BiTreeNode< Key, T >* parent = fakeRoot_;
+
+    while (current != fakeLeaf_)
+    {
+      if (cmp_(key, current->data.first))
+      {
+          parent = current;
+          current = current->left;
+      }
+      else if (cmp_(current->data.first, key))
+      {
+        parent = current;
+        current = current->right;
+      }
+      else
+      {
+        return current->data.second;
+      }
+    }
+
+    BiTreeNode< Key, T >* newNode = new BiTreeNode< Key, T >{ std::pair< Key, T >(key, T()), fakeLeaf_, fakeLeaf_, parent };
+    if (cmp_(key, parent->data.first))
+    {
+      parent->left = newNode;
+    }
+    else
+    {
+      parent->right = newNode;
+    }
+    size_++;
+    return newNode->data.second;
+  }
 }
 
 #endif
