@@ -5,24 +5,22 @@
 
 int main()
 {
-  krylov::List< std::pair< std::string, krylov::List< unsigned long long > > > listOfPairs;
-  std::string line = "";
+  using namespace krylov;
+  List< std::pair< std::string, List< unsigned long long > > > listOfPairs;
+  std::string line;
   std::cin >> line;
   size_t maxSizeOfNumList = 0;
   while (!std::cin.eof())
   {
-    std::pair< std::string, krylov::List< unsigned long long > > pair;
+    std::pair< std::string, List< unsigned long long > > pair;
     pair.first = line;
     std::cin >> line;
-    while (!std::cin.eof() && isdigit(line[0]))
+    while (!std::cin.eof() && std::isdigit(line[0]))
     {
-      pair.second.push_back(strtoull(line.c_str(), nullptr, 0));
+      pair.second.push_back(std::strtoull(line.c_str(), nullptr, 0));
       std::cin >> line;
     }
-    if (maxSizeOfNumList < pair.second.size())
-    {
-      maxSizeOfNumList = pair.second.size();
-    }
+    maxSizeOfNumList = std::max(pair.second.size(), maxSizeOfNumList);
     listOfPairs.push_back(pair);
   }
   if (listOfPairs.empty())
@@ -36,7 +34,7 @@ int main()
     std::cout << it->first << " ";
   }
   std::cout << (--listOfPairs.end())->first << "\n";
-  krylov::List< unsigned long long > listOfLineSums;
+  List< unsigned long long > listOfLineSums;
   bool wasOverflow = false;
   unsigned long long maxValue = std::numeric_limits< unsigned long long >::max();
   for (size_t i = 0; i < maxSizeOfNumList; ++i)
@@ -82,6 +80,7 @@ int main()
     }
     std::cout << " " << *(std::next((--(listOfPairs.end()))->second.begin(), i)) << "\n";
   }
+
   if (wasOverflow)
   {
     std::cerr << "Overflow!\n";
