@@ -1,8 +1,8 @@
 #ifndef LIST_HPP
 #define LIST_HPP
-#include <iostream>
 #include <cstddef>
 #include <iterator>
+#include <functional>
 #include <stdexcept>
 #include "list-node.hpp"
 #include "list-iterators.hpp"
@@ -75,10 +75,18 @@ namespace krylov
     size_(0)
   {
     Node< T >* current = other.head_;
-    while (current)
+    try
     {
-      push_back(current->data_);
-      current = current->next_;
+      while (current)
+      {
+        push_back(current->data_);
+        current = current->next_;
+      }
+    }
+    catch(const std::exception& e)
+    {
+      clear();
+      throw;
     }
   }
 
@@ -94,7 +102,7 @@ namespace krylov
   }
 
   template< typename T >
-  List< T >::List(const size_t n, const T& value):
+  List< T >::List(size_t n, const T& value):
     head_(nullptr),
     tail_(nullptr),
     size_(0)
@@ -109,6 +117,7 @@ namespace krylov
     catch (const std::bad_alloc& e)
     {
       clear();
+      throw;
     }
   }
 
@@ -127,28 +136,15 @@ namespace krylov
       swap(temp);
     }
   }
+
   template< typename T >
   void List< T >::splice(ConstIterator< T > position, List< T >& other) noexcept
   {
-    if (this == &other || other.empty())
+    if (this == std::addressof(other) || other.empty())
     {
       return;
     }
-    if (position.current_->prev_)
-    {
-      position.current_->prev_->next_ = other.head_;
-    }
-    else
-    {
-      head_ = other.head_;
-    }
-    other.tail_->next_ = position.current_;
-    other.head_->prev_ = position.current_->prev_;
-    position.current_->prev_ = other.tail_;
-    size_ += other.size();
-    other.size_ = 0;
-    other.head_ = nullptr;
-    other.tail_ = nullptr;
+    splice(position, other, other.cbegin(), other.cend());
   }
 
   template< typename T >
@@ -160,39 +156,13 @@ namespace krylov
   template< typename T >
   void List< T >::splice(ConstIterator< T > position, List< T >& other, ConstIterator< T > it) noexcept
   {
-    if (this == &other || it.current_ == nullptr)
+    if (this == std::addressof(other) || it.current_ == nullptr)
     {
       return;
     }
-    if (it.current_->prev_)
-    {
-      it.current_->prev_->next_ = it.current_->next_;
-    }
-    else
-    {
-      other.head_ = it.current_->next_;
-    }
-    if (it.current_->next_)
-    {
-      it.current_->next_->prev_ = it.current_->prev_;
-    }
-    else
-    {
-      other.tail_ = it.current_->prev_;
-    }
-    it.current_->prev_ = position.current_->prev_;
-    it.current_->next_ = position.current_;
-    if (position.current_->prev_)
-    {
-      position.current_->prev_->next_ = it.current_;
-    }
-    else
-    {
-      head_ = it.current_;
-    }
-    position.current_->prev_ = it.current_;
-    --other.size_;
-    ++size_;
+    ConstIterator< T > next = it;
+    ++next;
+    splice(position, other, it, next);
   }
 
   template< typename T >
@@ -204,7 +174,7 @@ namespace krylov
   template< typename T >
   void List< T >::splice(ConstIterator< T > position, List< T >& other, ConstIterator< T > first, ConstIterator< T > last) noexcept
   {
-    if (this == &other || first == last)
+    if (this == std::addressof(other) || first == last)
     {
       return;
     }
@@ -255,7 +225,7 @@ namespace krylov
   template< typename T >
   void List< T >::remove(const T& value) noexcept
   {
-    remove_if([&](const T& x) { return value == x; });
+    remove_if(std::bind(std::equal_to< T >(), std::placeholders::_1, value));
   }
 
   template< typename T >
@@ -297,17 +267,11 @@ namespace krylov
   template< typename T >
   List< T >& List< T >::operator=(const List< T >& other)
   {
-    if (this == &other)
+    if (this == std::addressof(other))
     {
       return *this;
     }
-    List< T > temp;
-    Node< T >* current = other.head_;
-    while (current)
-    {
-      temp.push_back(current->data_);
-      current = current->next_;
-    }
+    List< T > temp(other);
     swap(temp);
     return *this;
   }
@@ -315,17 +279,12 @@ namespace krylov
   template< typename T >
   List< T >& List< T >::operator=(List< T >&& other) noexcept
   {
-    if (this == &other)
+    if (this == std::addressof(other))
     {
       return *this;
     }
     clear();
-    head_ = other.head_;
-    tail_ = other.tail_;
-    size_ = other.size_;
-    other.head_ = nullptr;
-    other.tail_ = nullptr;
-    other.size_ = 0;
+    swap(other);
     return *this;
   }
 
@@ -434,7 +393,7 @@ namespace krylov
   template< typename T >
   Iterator< T > List< T >::begin() noexcept
   {
-    return Iterator< T >(head_);
+    return Iterator< T >(head_, this);
   }
 
   template< typename T >
@@ -446,7 +405,7 @@ namespace krylov
   template< typename T >
   ConstIterator< T > List< T >::cbegin() const noexcept
   {
-    return ConstIterator< T >(head_);
+    return ConstIterator< T >(head_, this);
   }
 
   template< typename T >
