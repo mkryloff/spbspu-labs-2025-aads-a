@@ -30,16 +30,16 @@ void krylov::complementComm(std::istream& in, Dictionary& dicts)
   in >> resultName >> dictName1 >> dictName2;
   auto it1 = dicts.find(dictName1);
   auto it2 = dicts.find(dictName2);
-  if (it1 == dicts.end() || it2 == dicts.end())
+  if (it1 == dicts.cend() || it2 == dicts.cend())
   {
     throw std::logic_error("<INVALID COMMAND>");
   }
   auto dict1 = it1->second;
   auto dict2 = it2->second;
-  std::map< int, std::string, std::less< int > > result;
+  BiTree< int, std::string, std::less< int > > result;
   for (auto it = dict1.cbegin(); it != dict1.cend(); ++it)
   {
-    if (dict2.find(it->first) == dict2.end())
+    if (dict2.find(it->first) == dict2.cend())
     {
       result[it->first] = it->second;
     }
@@ -53,16 +53,16 @@ void krylov::intersectComm(std::istream& in, Dictionary& dicts)
   in >> resultName >> dictName1 >> dictName2;
   auto it1 = dicts.find(dictName1);
   auto it2 = dicts.find(dictName2);
-  if (it1 == dicts.end() || it2 == dicts.end())
+  if (it1 == dicts.cend() || it2 == dicts.cend())
   {
     throw std::logic_error("<INVALID COMMAND>");
   }
   auto dict1 = it1->second;
   auto dict2 = it2->second;
-  std::map< int, std::string, std::less< int > > result;
+  BiTree< int, std::string, std::less< int > > result;
   for (auto it = dict1.cbegin(); it != dict1.cend(); ++it)
   {
-    if (dict2.find(it->first) != dict2.end())
+    if (dict2.find(it->first) != dict2.cend())
     {
       result[it->first] = it->second;
     }
@@ -76,16 +76,16 @@ void krylov::unionComm(std::istream& in, Dictionary& dicts)
   in >> resultName >> dictName1 >> dictName2;
   auto it1 = dicts.find(dictName1);
   auto it2 = dicts.find(dictName2);
-  if (it1 == dicts.end() || it2 == dicts.end())
+  if (it1 == dicts.cend() || it2 == dicts.cend())
   {
     throw std::logic_error("<INVALID COMMAND>");
   }
   auto dict1 = it1->second;
   auto dict2 = it2->second;
-  std::map< int, std::string, std::less< int > > result = dict1;
+  BiTree< int, std::string, std::less< int > > result = dict1;
   for (auto it = dict2.cbegin(); it != dict2.cend(); ++it)
   {
-    if (result.find(it->first) == result.end())
+    if (result.find(it->first) == result.cend())
     {
       result[it->first] = it->second;
     }
@@ -99,7 +99,7 @@ void krylov::inputFile(const std::string& filename, Dictionary& dicts)
   std::string dataSet;
   while (file >> dataSet)
   {
-    std::map< int, std::string, std::less< int > > dict;
+    BiTree< int, std::string, std::less< int > > dict;
     int key;
     std::string value;
     while ((file >> key) && (file >> value))
