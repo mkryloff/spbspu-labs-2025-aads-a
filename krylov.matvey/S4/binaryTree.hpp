@@ -1,6 +1,7 @@
 #ifndef BINARYTREE_HPP
 #define BINARYTREE_HPP
 #include <cstddef>
+#include <stdexcept>
 #include "treeNode.hpp"
 #include "treeConstIterators.hpp"
 
@@ -33,6 +34,7 @@ namespace krylov
     BiTreeNode< Key, T > * fakeLeaf_;
     size_t size_;
     Cmp cmp_;
+    void clearTree(BiTreeNode< Key, T >* root);
   };
 
   template< typename Key, typename T, typename Cmp >
@@ -48,6 +50,14 @@ namespace krylov
   }
 
   template< typename Key, typename T, typename Cmp >
+  BiTree< Key, T, Cmp >::~BiTree()
+  {
+    clear();
+    delete fakeRoot_;
+    delete fakeLeaf_;
+  }
+
+  template< typename Key, typename T, typename Cmp >
   BiTree< Key, T, Cmp >::BiTree(BiTree< Key, T, Cmp >&& rhs) noexcept:
     fakeRoot_(rhs.fakeRoot_),
     fakeLeaf_(rhs.fakeLeaf_),
@@ -59,6 +69,27 @@ namespace krylov
     rhs.fakeRoot_->left = rhs.fakeLeaf_;
     rhs.fakeRoot_->right = rhs.fakeLeaf_;
     rhs.size_ = 0;
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  ConstIterator< Key, T, Cmp > BiTree< Key, T, Cmp >::cbegin() const noexcept
+  {
+    if (empty())
+    {
+      return cend();
+    }
+    BiTreeNode< Key, T >* current = fakeRoot_->left;
+    while (current->left != fakeLeaf_)
+    {
+      current = current->left;
+    }
+    return ConstIterator< Key, T, Cmp >(current, fakeLeaf_);
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  ConstIterator< Key, T, Cmp > BiTree< Key, T, Cmp >::cend() const noexcept
+  {
+    return ConstIterator< Key, T, Cmp >(fakeLeaf_, fakeLeaf_);
   }
 
   template< typename Key, typename T, typename Cmp >
@@ -145,6 +176,72 @@ namespace krylov
     }
     size_++;
     return newNode->data.second;
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  T& BiTree< Key, T, Cmp >::at(const Key& key)
+  {
+    BiTreeNode< Key, T >* current = fakeRoot_->left;
+    while (current != fakeLeaf_)
+    {
+      if (cmp_(key, current->data.first))
+      {
+        current = current->left;
+      }
+      else if (cmp_(current->data.first, key))
+      {
+        current = current->right;
+      }
+      else
+      {
+        return current->data.second;
+      }
+    }
+    throw std::out_of_range("ERROR: Key not found");
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  const T& BiTree< Key, T, Cmp >::at(const Key& key) const
+  {
+    const BiTreeNode< Key, T >* current = fakeRoot_->left;
+    while (current != fakeLeaf_)
+    {
+      if (cmp_(key, current->data.first))
+      {
+        current = current->left;
+      }
+      else if (cmp_(current->data.first, key))
+      {
+        current = current->right;
+      }
+      else
+      {
+        return current->data.second;
+      }
+    }
+    throw std::out_of_range("ERROR: Key not found");
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  void BiTree< Key, T, Cmp >::clear() noexcept
+  {
+    clearTree(fakeRoot_->left);
+    clearTree(fakeRoot_->right);
+    fakeRoot_->left = fakeLeaf_;
+    fakeRoot_->right = fakeLeaf_;
+    size_ = 0;
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  void BiTree< Key, T, Cmp >::clearTree(BiTreeNode< Key, T >* root)
+  {
+    if (root == fakeLeaf_)
+    {
+      return;
+    }
+    clearTree(root->left);
+    clearTree(root->right);
+    delete root;
   }
 }
 
