@@ -13,6 +13,7 @@ namespace krylov
   template< typename Key, typename T, typename Cmp >
   class BiTree
   {
+  public:
     BiTree();
     BiTree(const BiTree< Key, T, Cmp >& rhs);
     BiTree(BiTree< Key, T, Cmp >&& rhs) noexcept;
@@ -29,7 +30,7 @@ namespace krylov
     void swap(BiTree< Key, T, Cmp >& rhs) noexcept;
     bool empty() const noexcept;
     size_t size() const noexcept;
-   private:
+  private:
     BiTreeNode< Key, T > * fakeRoot_;
     BiTreeNode< Key, T > * fakeLeaf_;
     size_t size_;
