@@ -2,8 +2,8 @@
 #include <functional>
 #include <limits>
 #include <map>
+#include <binaryTree.hpp>
 #include "dataCommands.hpp"
-#include "binaryTree.hpp"
 
 int main(int argc, char** argv)
 {
