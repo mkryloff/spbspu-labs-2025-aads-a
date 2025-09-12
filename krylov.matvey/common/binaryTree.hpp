@@ -1,6 +1,8 @@
 #ifndef BINARYTREE_HPP
 #define BINARYTREE_HPP
 #include <cstddef>
+#include <stack>
+#include <queue>
 #include <stdexcept>
 #include "treeNode.hpp"
 #include "treeConstIterators.hpp"
@@ -30,6 +32,18 @@ namespace krylov
     void swap(BiTree< Key, T, Cmp >& rhs) noexcept;
     bool empty() const noexcept;
     size_t size() const noexcept;
+    template< typename F >
+    F traverseLnr(F f);
+    template< typename F >
+    F traverseLnr(F f) const;
+    template< typename F >
+    F traverseRnl(F f);
+    template< typename F >
+    F traverseRnl(F f) const;
+    template< typename F >
+    F traverseBreadth(F f);
+    template< typename F >
+    F traverseBreadth(F f) const;
   private:
     BiTreeNode< Key, T > * fakeRoot_;
     BiTreeNode< Key, T > * fakeLeaf_;
@@ -285,6 +299,102 @@ namespace krylov
     clearTree(root->left);
     clearTree(root->right);
     delete root;
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  template< typename F >
+  F BiTree< Key, T, Cmp >::traverseLnr(F f)
+  {
+    std::stack< BiTreeNode< Key, T >* > stack;
+    BiTreeNode< Key, T >* current = fakeRoot_->left;
+    bool leftTraversed = false;
+    while (current != fakeLeaf_ || !stack.empty())
+    {
+      if (!leftTraversed && current != fakeLeaf_)
+      {
+        stack.push(current);
+        current = current->left;
+      }
+      else
+      {
+        current = stack.top();
+        stack.pop();
+        f(current->data);
+        current = current->right;
+        leftTraversed = (current == fakeLeaf_);
+      }
+    }
+    return f;
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  template< typename F >
+  F BiTree< Key, T, Cmp >::traverseLnr(F f) const
+  {
+    return const_cast< BiTree< Key, T, Cmp >* >(this)->traverseLnr(f);
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  template< typename F >
+  F BiTree< Key, T, Cmp >::traverseRnl(F f)
+  {
+    std::stack< BiTreeNode< Key, T >* > stack;
+    BiTreeNode< Key, T >* current = fakeRoot_->left;
+    bool rightTraversed = false;
+    while (current != fakeLeaf_ || !stack.empty())
+    {
+      if (!rightTraversed && current != fakeLeaf_)
+      {
+        stack.push(current);
+        current = current->right;
+      }
+      else
+      {
+        current = stack.top();
+        stack.pop();
+        f(current->data);
+        current = current->left;
+        rightTraversed = (current == fakeLeaf_);
+      }
+    }
+    return f;
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  template< typename F >
+  F BiTree< Key, T, Cmp >::traverseRnl(F f) const
+  {
+    return const_cast< BiTree< Key, T, Cmp >* >(this)->traverseRnl(f);
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  template< typename F >
+  F BiTree< Key, T, Cmp >::traverseBreadth(F f)
+  {
+    std::queue< BiTreeNode< Key, T >* > queue;
+    queue.push(fakeRoot_->left);
+    while (!queue.empty())
+    {
+      BiTreeNode< Key, T >* current = queue.front();
+      queue.pop();
+      f(current->data);
+      if (current->left != fakeLeaf_)
+      {
+        queue.push(current->left);
+      }
+      if (current->right != fakeLeaf_)
+      {
+        queue.push(current->right);
+      }
+    }
+    return f;
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  template< typename F >
+  F BiTree< Key, T, Cmp >::traverseBreadth(F f) const
+  {
+    return const_cast< BiTree< Key, T, Cmp >* >(this)->traverseBreadth(f);
   }
 }
 
