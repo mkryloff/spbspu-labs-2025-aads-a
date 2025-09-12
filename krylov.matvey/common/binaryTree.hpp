@@ -329,6 +329,13 @@ namespace krylov
 
   template< typename Key, typename T, typename Cmp >
   template< typename F >
+  F BiTree< Key, T, Cmp >::traverseLnr(F f) const
+  {
+    return const_cast< BiTree< Key, T, Cmp >* >(this)->traverseLnr(f);
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  template< typename F >
   F BiTree< Key, T, Cmp >::traverseRnl(F f)
   {
     std::stack< BiTreeNode< Key, T >* > stack;
@@ -355,6 +362,13 @@ namespace krylov
 
   template< typename Key, typename T, typename Cmp >
   template< typename F >
+  F BiTree< Key, T, Cmp >::traverseRnl(F f) const
+  {
+    return const_cast< BiTree< Key, T, Cmp >* >(this)->traverseRnl(f);
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  template< typename F >
   F BiTree< Key, T, Cmp >::traverseBreadth(F f)
   {
     std::queue< BiTreeNode< Key, T >* > queue;
@@ -374,6 +388,13 @@ namespace krylov
       }
     }
     return f;
+  }
+
+  template< typename Key, typename T, typename Cmp >
+  template< typename F >
+  F BiTree< Key, T, Cmp >::traverseBreadth(F f) const
+  {
+    return const_cast< BiTree< Key, T, Cmp >* >(this)->traverseBreadth(f);
   }
 }
 
